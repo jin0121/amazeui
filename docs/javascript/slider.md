@@ -17,6 +17,8 @@ doc: docs/javascript/slider.md
 
 [Web 组件中的图片轮播](/widgets/slider?_ver=2.x) 调用此插件，只是样式上做了一些扩展。
 
+**演示图标版权归[微软 Bing](http://www.bing.com) 所有。**
+
 ## 使用演示
 
 
@@ -26,10 +28,10 @@ doc: docs/javascript/slider.md
 `````html
 <div class="am-slider am-slider-default" data-am-flexslider>
   <ul class="am-slides">
-    <li><img src="http://cn.bing.com/az/hprichv/LondonTrainStation_GettyRR_139321755_ZH-CN742316019.jpg" /></li>
-    <li><img src="http://s.cn.bing.net/az/hprichbg/rb/CardinalsBerries_ZH-CN10679090179_1366x768.jpg"></li>
-    <li><img src="http://s.cn.bing.net/az/hprichbg/rb/QingdaoJiaozhou_ZH-CN10690497202_1366x768.jpg"></li>
-    <li><img src="http://s.cn.bing.net/az/hprichbg/rb/FennecFox_ZH-CN13720911949_1366x768.jpg"></li>
+    <li><img src="http://7jpqbr.com1.z0.glb.clouddn.com/bing-1.jpg" /></li>
+    <li><img src="http://7jpqbr.com1.z0.glb.clouddn.com/bing-2.jpg" /></li>
+    <li><img src="http://7jpqbr.com1.z0.glb.clouddn.com/bing-3.jpg" /></li>
+    <li><img src="http://7jpqbr.com1.z0.glb.clouddn.com/bing-4.jpg" /></li>
   </ul>
 </div>
 `````
@@ -47,14 +49,14 @@ doc: docs/javascript/slider.md
 <div class="am-slider am-slider-default"
      data-am-flexslider="{controlNav: 'thumbnails', directionNav: false}">
   <ul class="am-slides">
-    <li data-thumb="http://amui.qiniudn.com/pure-1.jpg"><img
-      src="http://amui.qiniudn.com/pure-1.jpg?imageView2/0/w/640" /></li>
-    <li data-thumb="http://amui.qiniudn.com/pure-2.jpg"><img
-      src="http://amui.qiniudn.com/pure-2.jpg?imageView2/0/w/640" /></li>
-    <li data-thumb="http://amui.qiniudn.com/pure-3.jpg"><img
-      src="http://amui.qiniudn.com/pure-3.jpg?imageView2/0/w/640" /></li>
-    <li data-thumb="http://amui.qiniudn.com/pure-4.jpg"><img
-      src="http://amui.qiniudn.com/pure-4.jpg?imageView2/0/w/640" /></li>
+    <li data-thumb="http://amui.qiniudn.com/pure-1.jpg?imageView2/0/w/360"><img
+      src="http://amui.qiniudn.com/pure-1.jpg" /></li>
+    <li data-thumb="http://amui.qiniudn.com/pure-2.jpg?imageView2/0/w/360"><img
+      src="http://amui.qiniudn.com/pure-2.jpg" /></li>
+    <li data-thumb="http://amui.qiniudn.com/pure-3.jpg?imageView2/0/w/360"><img
+      src="http://amui.qiniudn.com/pure-3.jpg" /></li>
+    <li data-thumb="http://amui.qiniudn.com/pure-4.jpg?imageView2/0/w/360"><img
+      src="http://amui.qiniudn.com/pure-4.jpg" /></li>
 
   </ul>
 </div>
@@ -176,10 +178,10 @@ slider.removeSlide(obj); 移除 slide
 `````html
 <div class="am-slider am-slider-default" data-am-flexslider="{playAfterPaused: 8000}">
   <ul class="am-slides">
-    <li><img src="http://cn.bing.com/az/hprichv/LondonTrainStation_GettyRR_139321755_ZH-CN742316019.jpg" /></li>
-    <li><img src="http://s.cn.bing.net/az/hprichbg/rb/CardinalsBerries_ZH-CN10679090179_1366x768.jpg"></li>
-    <li><img src="http://s.cn.bing.net/az/hprichbg/rb/QingdaoJiaozhou_ZH-CN10690497202_1366x768.jpg"></li>
-    <li><img src="http://s.cn.bing.net/az/hprichbg/rb/FennecFox_ZH-CN13720911949_1366x768.jpg"></li>
+    <li><img src="http://7jpqbr.com1.z0.glb.clouddn.com/bing-1.jpg" /></li>
+    <li><img src="http://7jpqbr.com1.z0.glb.clouddn.com/bing-2.jpg" /></li>
+    <li><img src="http://7jpqbr.com1.z0.glb.clouddn.com/bing-3.jpg" /></li>
+    <li><img src="http://7jpqbr.com1.z0.glb.clouddn.com/bing-4.jpg" /></li>
   </ul>
 </div>
 `````

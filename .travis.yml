@@ -1,8 +1,15 @@
+sudo: false
+
 language: node_js
 
 node_js:
   - "0.10"
 
-script: gulp build
+env:
+  global:
+    - NODE_ENV=travisci
 
-sudo: false
+before_install:
+  - npm install -g gulp
+
+script: gulp build

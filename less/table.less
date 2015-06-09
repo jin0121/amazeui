@@ -138,7 +138,6 @@ th {
       }
     }
   }
-
 }
 
 
@@ -157,6 +156,25 @@ th {
 
         &:first-child {
           border-left: none;
+        }
+      }
+    }
+  }
+
+  // fixes #566
+  > tbody > tr:first-child {
+    > th,
+    > td {
+      border-top: none;
+    }
+  }
+
+  > thead {
+    & + tbody {
+      > tr:first-child {
+        > th,
+        > td {
+          border-top: 1px solid @table-border-color;
         }
       }
     }
@@ -239,6 +257,23 @@ th {
   > th {
     background-color: @table-bg-hover;
     .hook-table-hover;
+  }
+}
+
+
+// Modifiers: compact
+// =============================================================================
+
+.@{ns}table-compact {
+  > thead,
+  > tbody,
+  > tfoot {
+    > tr {
+      > th,
+      > td {
+        padding: @table-cell-padding-compact;
+      }
+    }
   }
 }
 

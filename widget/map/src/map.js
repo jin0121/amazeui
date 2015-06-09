@@ -2,7 +2,7 @@
 /* global BMap */
 
 var $ = require('jquery');
-require('./core');
+require('../../../js/core');
 
 function addMapApi(callback) {
   var $mapApi0 = $('<script />', {
@@ -115,7 +115,7 @@ var mapInit = function() {
   $('.am-map').length && addMapApi(addBdMap);
 };
 
-$(document).on('ready', mapInit);
+$(mapInit);
 
 module.exports = $.AMUI.map = {
   VERSION: '2.0.2',

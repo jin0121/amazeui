@@ -15,7 +15,7 @@ var $win = $(window);
 var doc = window.document;
 var $html = $('html');
 
-UI.VERSION = '2.0.0';
+UI.VERSION = '{{VERSION}}';
 
 UI.support = {};
 
@@ -416,7 +416,7 @@ UI.DOMReady = false;
 UI.ready = function(callback) {
   UI.DOMWatchers.push(callback);
   if (UI.DOMReady) {
-    console.log('ready call');
+    // console.log('Ready call');
     callback(document);
   }
 };
@@ -463,14 +463,8 @@ $.fn.DOMObserve = function(options, callback) {
   });
 };
 
-// Attach FastClick on touch devices
 if (UI.support.touch) {
   $html.addClass('am-touch');
-
-  $(function() {
-    var FastClick = $.AMUI.FastClick;
-    FastClick && FastClick.attach(document.body);
-  });
 }
 
 $(document).on('changed.dom.amui', function(e) {
