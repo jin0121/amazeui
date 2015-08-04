@@ -4,9 +4,9 @@
 'use strict';
 
 var path = require('path');
-var fs = require('fs-extra');
-var _ = require('lodash');
+var fs = require('fs');
 var format = require('util').format;
+var _ = require('lodash');
 var browserify = require('browserify');
 var watchify = require('watchify');
 var collapser = require('bundle-collapser/plugin');
@@ -65,6 +65,9 @@ var config = {
     'bb >= 10'
   ],
   uglify: {
+    compress: {
+      warnings: false
+    },
     output: {
       ascii_only: true
     }
@@ -77,7 +80,7 @@ var banner = [
   '/*! <%= pkg.title %> v<%= pkg.version %><%=ver%>',
   'by Amaze UI Team',
   '(c) ' + $.util.date(Date.now(), 'UTC:yyyy') + ' AllMobilize, Inc.',
-  'Licensed under <%= pkg.license.type %>',
+  'Licensed under <%= pkg.license %>',
   $.util.date(Date.now(), dateFormat) + ' */ \n'
 ].join(' | ');
 
@@ -96,19 +99,20 @@ var preparingData = function() {
 
   var rejectWidgets = ['.DS_Store', 'blank', 'layout2', 'layout3', 'layout4',
     'container'];
-  var allWidgets = _.reject(fs.readdirSync(WIDGET_DIR), function(widget) {
-    return rejectWidgets.indexOf(widget) > -1;
+  var allWidgets = fs.readdirSync(WIDGET_DIR).filter(function(widget) {
+    return rejectWidgets.indexOf(widget) === -1;
   });
 
   plugins = _.union(config.js.base, fs.readdirSync('./js'));
 
-  jsEntry += '\'use strict\';\n\n' + 'var $ = require(\'jquery\');\n\n';
+  jsEntry += '\'use strict\';\n\n' + 'var $ = require(\'jquery\');\n';
 
   plugins.forEach(function(plugin, i) {
     var basename = path.basename(plugin, '.js');
 
     if (basename !== 'amazeui' && basename !== 'amazeui.legacy') {
-      jsEntry += 'require("./' + basename + '");\n';
+      jsEntry += (basename === 'core' ? 'var UI = ' : '') +
+        'require("./' + basename + '");\n';
     }
   });
 
@@ -120,8 +124,7 @@ var preparingData = function() {
   // get widgets dependencies
   allWidgets.forEach(function(widget, i) {
     // read widget package.json
-    var pkg = fs.readJsonFileSync(path.
-      join(WIDGET_DIR, widget, 'package.json'));
+    var pkg = require(path.join(__dirname, WIDGET_DIR, widget, 'package.json'));
     // ./widget/header/src/header
     var srcPath = WIDGET_DIR + widget + '/src/' + widget;
 
@@ -144,7 +147,7 @@ var preparingData = function() {
   });
 
   // end jsEntry
-  jsEntry += '\nmodule.exports = $.AMUI;\n';
+  jsEntry += '\nmodule.exports = $.AMUI = UI;\n';
   fs.writeFileSync(path.join('./js/amazeui.js'), jsEntry);
 
   partials += '  };\n\n';
@@ -174,6 +177,16 @@ gulp.task('build:clean', function(cb) {
 gulp.task('build:less', function() {
   gulp.src(config.path.less)
     .pipe($.header(banner, {pkg: pkg, ver: ''}))
+    .pipe($.plumber({errorHandler: function (err) {
+      // 处理编译less错误提示  防止错误之后gulp任务直接中断
+      // $.notify.onError({
+      //           title:    "编译错误",
+      //           message:  "错误信息: <%= error.message %>",
+      //           sound:    "Bottle"
+      //       })(err);
+      console.log(err);
+      this.emit('end');
+    }}))
     .pipe($.less({
       paths: [
         path.join(__dirname, 'less'),
@@ -185,7 +198,7 @@ gulp.task('build:less', function() {
       }
     }))
     .pipe($.autoprefixer({browsers: config.AUTOPREFIXER_BROWSERS}))
-    .pipe($.replace('//dn-staticfile.qbox.me/font-awesome/4.3.0/', '../'))
+    .pipe($.replace('//dn-amui.qbox.me/font-awesome/4.3.0/', '../'))
     .pipe(gulp.dest(config.dist.css))
     .pipe($.size({showFiles: true, title: 'source'}))
     // Disable advanced optimizations - selector & property merging, etc.
@@ -206,12 +219,14 @@ gulp.task('build:fonts', function() {
 });
 
 var bundleInit = function() {
-  var b = browserify(_.assign({}, watchify.args, {
+  var b = browserify({
     entries: './js/amazeui.js',
     basedir: __dirname,
     standalone: 'AMUI',
-    paths: ['./js']
-  }));
+    paths: ['./js'],
+    cache: {},
+    packageCache: {}
+  });
 
   if (process.env.NODE_ENV !== 'travisci') {
     b = watchify(b);
@@ -220,8 +235,8 @@ var bundleInit = function() {
     });
   }
 
-  // b.plugin(collapser);
   b.plugin(derequire);
+  b.plugin(collapser);
   b.on('log', $.util.log);
   bundle(b);
 };
@@ -245,16 +260,12 @@ var bundle = function(b) {
 gulp.task('build:js:browserify', bundleInit);
 
 gulp.task('build:js:fuckie', function() {
-  return browserify({
-    entries: './js/amazeui.legacy.js'
-  }).bundle()
-    .pipe(source('amazeui.legacy.js'))
-    .pipe(buffer())
-    .pipe($.replace('{{VERSION}}', pkg.version))
-    .pipe($.header(banner, {pkg: pkg, ver: ' ~ Old IE Fucker'}))
+  return gulp.src('vendor/polyfill/*.js')
+    .pipe($.concat('amazeui.ie8polyfill.js'))
+    .pipe($.header(banner, {pkg: pkg, ver: ' ~ IE8 Fucker'}))
     .pipe(gulp.dest(config.dist.js))
     .pipe($.uglify(config.uglify))
-    .pipe($.header(banner, {pkg: pkg, ver: ' ~ Old IE Fucker'}))
+    .pipe($.header(banner, {pkg: pkg, ver: ' ~ IE8 Fucker'}))
     .pipe($.rename({suffix: '.min'}))
     .pipe(gulp.dest(config.dist.js))
     .pipe($.size({showFiles: true, title: 'minified'}))
@@ -264,17 +275,48 @@ gulp.task('build:js:fuckie', function() {
 gulp.task('build:js:helper', function() {
   gulp.src(config.path.hbsHelper)
     .pipe($.concat(pkg.name + '.widgets.helper.js'))
-    .pipe($.header(banner, {pkg: pkg, ver: ' ~ helper'}))
+    .pipe($.header(banner, {pkg: pkg, ver: ' ~ Handlebars helper'}))
     .pipe(gulp.dest(config.dist.js))
     .pipe($.uglify())
-    .pipe($.header(banner, {pkg: pkg, ver: ' ~ helper'}))
+    .pipe($.header(banner, {pkg: pkg, ver: ' ~ Handlebars helper'}))
     .pipe($.rename({suffix: '.min'}))
     .pipe(gulp.dest(config.dist.js));
 });
 
+gulp.task('build:js:pack', function() {
+  return gulp.src('js/amazeui.js')
+    .pipe($.webpack({
+      watch: process.env.NODE_ENV !== 'travisci',
+      output: {
+        filename: 'amazeui.js',
+        library: 'AMUI',
+        libraryTarget: 'umd'
+      },
+      externals: [
+        {
+          jquery: {
+            root: 'jQuery',
+            commonjs2: 'jquery',
+            commonjs: 'jquery',
+            amd: 'jquery'
+          }
+        }
+      ]
+    }))
+    .pipe($.replace('{{VERSION}}', pkg.version))
+    .pipe($.header(banner, {pkg: pkg, ver: ''}))
+    .pipe(gulp.dest(config.dist.js))
+    .pipe($.uglify(config.uglify))
+    .pipe($.header(banner, {pkg: pkg, ver: ''}))
+    .pipe($.rename({suffix: '.min'}))
+    .pipe(gulp.dest(config.dist.js))
+    .pipe($.size({showFiles: true, title: 'minified'}))
+    .pipe($.size({showFiles: true, gzip: true, title: 'gzipped'}));
+});
+
 gulp.task('build:js', function(cb) {
   runSequence(
-    ['build:js:browserify', 'build:js:fuckie'],
+    ['build:js:pack', 'build:js:fuckie'],
     ['build:js:helper'],
     cb);
 });
@@ -300,8 +342,7 @@ gulp.task('archive', function(cb) {
   runSequence([
       'archive:copy:css',
       'archive:copy:fonts',
-      'archive:copy:js',
-      'archive:copy:polyfill'
+      'archive:copy:js'
     ],
     'archive:zip',
     'archive:clean', cb);
@@ -309,7 +350,6 @@ gulp.task('archive', function(cb) {
 
 gulp.task('archive:copy:css', function() {
   return gulp.src('./dist/css/*.css')
-    .pipe($.replace('//dn-staticfile.qbox.me/font-awesome/4.2.0/', '../'))
     .pipe(gulp.dest('./docs/examples/assets/css'));
 });
 
@@ -325,12 +365,6 @@ gulp.task('archive:copy:js', function() {
     './node_modules/jquery/dist/jquery.min.js'])
     .pipe($.replace('\n//# sourceMappingURL=jquery.min.map', ''))
     .pipe(gulp.dest('./docs/examples/assets/js'));
-});
-
-gulp.task('archive:copy:polyfill', function() {
-  return gulp.src([
-    './vendor/polyfill/*.js'])
-    .pipe(gulp.dest('./docs/examples/assets/js/polyfill'));
 });
 
 gulp.task('archive:zip', function() {

@@ -25,6 +25,7 @@ Validator.DEFAULTS = {
   validClass: 'am-field-valid',
 
   validateOnSubmit: true,
+  alwaysRevalidate: false,
   // Elements to validate with allValid (only validating visible elements)
   // :input: selects all input, textarea, select and button elements.
   allFields: ':input:visible:not(:submit, :button, :disabled, .am-novalidate)',
@@ -83,7 +84,7 @@ Validator.DEFAULTS = {
   submit: null
 };
 
-Validator.VERSION = '2.0.0';
+Validator.VERSION = '2.4.1';
 
 /* jshint -W101 */
 Validator.patterns = {
@@ -231,10 +232,12 @@ Validator.prototype.init = function() {
 
 Validator.prototype.isValid = function(field) {
   var $field = $(field);
+  var options = this.options;
   // valid field not has been validated
-  if ($field.data('validity') === undefined) {
+  if ($field.data('validity') === undefined || options.alwaysRevalidate) {
     this.validate(field);
   }
+
   return $field.data('validity') && $field.data('validity').valid;
 };
 
@@ -352,6 +355,8 @@ Validator.prototype.validate = function(field) {
         _this.markField(validity);
       });
     }
+
+    return validity;
   };
 
   // Run custom validate
@@ -542,30 +547,17 @@ Validator.prototype.getValidationMessage = function(validity) {
   return message;
 };
 
-function Plugin(option) {
-  return this.each(function() {
-    var $this = $(this);
-    var data = $this.data('amui.validator');
-    var options = $.extend({}, UI.utils.parseOptions($this.data('amValidator')),
-      typeof option === 'object' && option);
+// remove valid mark
+Validator.prototype.removeMark = function() {
+  this.$element.find('.am-form-success, .am-form-error, .am-field-error')
+    .removeClass('am-form-success am-form-error am-field-error');
+};
 
-    if (!data) {
-      $this.data('amui.validator', (data = new Validator(this, options)));
-    }
-
-    if (typeof option === 'string') {
-      data[option] && data[option]();
-    }
-  });
-}
-
-$.fn.validator = Plugin;
+UI.plugin('validator', Validator);
 
 // init code
 UI.ready(function(context) {
   $('[data-am-validator]', context).validator();
 });
-
-$.AMUI.validator = Validator;
 
 module.exports = Validator;

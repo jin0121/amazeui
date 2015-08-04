@@ -225,7 +225,6 @@ Modal.prototype.events = function() {
       var $this = $(this);
 
       if ($this.is($confirm)) {
-        console.log('sdafdf');
         options.closeOnConfirm && _this.close();
       } else if ($this.is($cancel)) {
         options.closeOnCancel && _this.close();
@@ -260,8 +259,7 @@ function Plugin(option, relatedTarget) {
   return this.each(function() {
     var $this = $(this);
     var data = $this.data('amui.modal');
-    var options = $.extend({},
-      Modal.DEFAULTS, typeof option == 'object' && option);
+    var options = typeof option == 'object' && option;
 
     if (!data) {
       $this.data('amui.modal', (data = new Modal(this, options)));
@@ -288,6 +286,4 @@ $doc.on('click.modal.amui.data-api', '[data-am-modal]', function() {
   Plugin.call($target, option, this);
 });
 
-$.AMUI.modal = Modal;
-
-module.exports = Modal;
+module.exports = UI.modal = Modal;

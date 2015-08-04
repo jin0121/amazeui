@@ -1,7 +1,7 @@
 'use strict';
 
 var $ = require('jquery');
-require('../../../js/core');
+var UI = require('../../../js/core');
 require('../../../js/ui.smooth-scroll');
 
 function goTopInit() {
@@ -24,14 +24,14 @@ function goTopInit() {
 
   checkPosition();
 
-  $win.on('scroll.gotop.amui', $.AMUI.utils.debounce(checkPosition, 100));
+  $win.on('scroll.gotop.amui', UI.utils.debounce(checkPosition, 100));
 
   $goTop.data('init', true);
 }
 
 $(goTopInit);
 
-module.exports = $.AMUI.gotop = {
+module.exports = UI.gotop = {
   VERSION: '4.0.2',
   init: goTopInit
 };

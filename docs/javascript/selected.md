@@ -38,7 +38,7 @@ doc: docs/javascript/selected.md
 ```html
 <select data-am-selected>
   <option value="a">Apple</option>
-  <option value="b">Banana</option>
+  <option value="b" selected>Banana</option>
   <option value="o">Orange</option>
   <option value="m">Mango</option>
   <option value="d" disabled>禁用鸟</option>
@@ -383,8 +383,6 @@ $(function() {
 
 通过 `$('select').selected(options)` 启用样式复写。
 
-**如果项目中同时使用了 [jQuery Form](https://github.com/malsup/form/)，`$.fn.selected` 有命名冲突，请使用 `$('select').selectIt(options)` 替代。**
-
 ```javascript
 $(function() {
   // 使用默认参数
@@ -408,17 +406,21 @@ $(function() {
 - `maxHeight: null`: 列表最大高度
 - `dropUp: 0`: 是否为上拉，默认为 `0` (`false`)
 
-`````html
-      <form data-am-validator>
-        <select id="city" data-am-selected="{btnWidth: '200px', btnSize: 'lg', btnStyle: ''}">
-          <option value="a">Apple</option>
-          <option value="b">Banana</option>
-          <option value="o">Orange</option>
-          <option value="m">Mango</option>
-          <option value="phone">iPhone</option>
-          <option value="im">iMac</option>
-          <option value="mbp">Macbook Pro</option>
-        </select>
+## 常见问题
 
-      </form>
-`````
+### 与 jQuery Form 冲突？
+
+如果项目中同时使用了 [jQuery Form](https://github.com/malsup/form/)，`$.fn.selected` **有命名冲突**：
+
+- `2.4.1` 以前的版本：请使用 `$('select').selectIt(options)` 替代；
+- `2.4.1` 及以后版本：
+
+  在 `amazeui.js` 后面引入 `jquery.form.js`，否则 jQuery Form 可能无法正常工作，然后执行以下代码（[在线演示](http://bin.amazeui.org/weputu/edit?html,output)）：
+
+  ```js
+  // 重新注册一个 jQuery 插件
+  AMUI.plugin('mySelected', AMUI.selected);
+
+  // 初始化插件
+  $('#my-select').mySelected();
+  ```

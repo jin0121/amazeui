@@ -1,6 +1,60 @@
 # Amaze UI Change Log
 ---
 
+### 2015.07 W4
+
+**CSS:**
+
+- `Fixed` Icon 图标使用 `<i>` 元素时在 IE9 中渲染为斜体问题。
+
+### 2015.07 W2
+
+**JS:**
+
+- `New` Popover 增加 `theme` 选项，用于设置颜色和尺寸；
+- `New` Popover 增加 `destroy` 方法，用于销毁实例。
+
+## Amaze UI 2.4.2 (2015.07.06)
+
+### 2015.07 W2
+
+**Web 组件：**
+
+- `Fixed` #659 Gotop 修复 ` $.AMUI is undefined` 错误。
+
+## Amaze UI 2.4.1 (2015.06.30)
+
+### 2015.06 W5
+
+**JS:**
+
+- `Improved` Tabs 增加标签切换及选项卡刷新、销毁 API。
+
+**示例：**
+
+- `Fixed` #647 修复后台管理模板在 iOS 部分浏览器上侧边栏按钮点击无效问题。
+
+### 2015.06 W4
+
+**JS:**
+
+- `Update` Add to Homescreen 升级到 `v3.2.2`；
+- `Update` NProgress 升级到 `v0.2.0`；
+- `New` 添加二维码生产插件 jQuery API；
+- `New` Popover 可以通过 `.popover('setContent', content)` 方法设置内容；
+- `Fixed` #628 修复 Sticky 获取元素高度不准确问题。
+
+**Web 组件：**
+
+- `Improved` Gallery 展示透明图片时加载图标没有隐藏问题。
+
+### 2015.06 W3
+
+**CSS:**
+
+- `New` Table 所有单元格居中对齐样式 `.am-table-centered`；
+- `Improved` Table 全边框样式包含 `rowspan` 时后面几行第一列不显示边框问题。
+
 ### 2015.06 W2
 
 **JS:**
